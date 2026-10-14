@@ -1,84 +1,35 @@
-from datetime import datetime, timezone
 import sys
-import json
-from task import Task
+from task_manager import add_task, update_task, delete_task, mark_status, list_tasks
+from storage import load_tasks
 
-tasks = []
+tasks = load_tasks()
 
-def load_tasks():
-    try:
-        with open("tasks.json", "r") as name1:
-            tasks_data = json.load(name1)
-            for task_data in tasks_data:
-                task = Task(
-                    task_data["description"],
-                    task_data["status"],
-                    task_data["id"],
-                    task_data["createdAt"],
-                    task_data["updatedAt"]
-                )
-                tasks.append(task)
-    except FileNotFoundError:
-        pass
+command = sys.argv[1] if len(sys.argv) > 1 else None
 
-def save_tasks():
-    with open("tasks.json", "w") as name1:
-        json.dump([j.to_dict() for j in tasks], name1)
+if command == "add":
+    description = sys.argv[2]
+    add_task(tasks, description)
 
-def add_task():
-    id = max([task.task_id for task in tasks]) + 1 if tasks else 1
-    desc = sys.argv[2]
-    task = Task(desc, "todo", id)
-    tasks.append(task)
-    save_tasks()
-    print("Task added!")
+elif command == "delete":
+    task_id = int(sys.argv[2])
+    delete_task(tasks, task_id)
 
-def show_tasks():
-    if not tasks:
-        print("There is no task.")
-        return
-    for l, task in enumerate(tasks, start=1):
-        print(f"{l}. {task.title} - {task.description}")
-
-def update_task():
-    if len(sys.argv) < 4:
-        print("Ingresa el ID de la tarea y el nuevo estado.")
-        return
+elif command == "update":
     task_id = int(sys.argv[2])
     new_description = sys.argv[3]
-    for task in tasks:
-        if task.id == task_id:
-            task.description = new_description
-            task.updatedAt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            save_tasks()
-            print("Task updated!")
-            
-def delete_task():
-    if len(sys.argv)<3:
-        print("Please provide the ID of the task to delete.")
-        return
+    update_task(tasks, task_id, new_description)
+
+elif command == "mark":
     task_id = int(sys.argv[2])
-    for task in tasks:
-        if task.id == task_id:
-            tasks.remove(task)
-            save_tasks()
-            print("Task deleted!")
-            return
+    new_status = sys.argv[3]
+    mark_status(tasks, task_id, new_status)
 
-load_tasks()
+elif command == "list":
+    if len(sys.argv) > 2:
+        status_filter = sys.argv[2]
+        list_tasks(tasks, status_filter)
+    else:
+        list_tasks(tasks)
 
-if sys.argv[1] == "add":
-    add_task()
-elif sys.argv[1] == "show":
-    show_tasks()
-elif sys.argv[1] == "update":
-    update_task()
-elif sys.argv[1] == "save":
-    save_tasks()
-    
 else:
-    print("Wrong choice.")
-
-sys.argv[0] = "main.py"
-sys.argv[1] = "add"
-sys.argv[2] = "Buy groceries"
+    print("Invalid command. Available commands: add, delete, update, mark, list")

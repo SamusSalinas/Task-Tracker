@@ -1,9 +1,2 @@
-[
-  {
-    "id": 1,
-    "description": "Buy groceries",
-    "status": "todo",
-    "createdAt": "2026-10-08T23:57:46Z",
-    "updatedAt": "2026-10-08T23:57:46Z"
-  }
-]
+[{"id": 1, "description": "Buy groceries", "status": "todo", "createdAt": "2026-10-08T23:57:46Z", "updatedAt": "2026-10-08T23:57:46Z"}, 
+{"id": 2, "description": "Seguir estudiando Python", "status": "todo", "createdAt": "2026-10-14T02:27:32Z", "updatedAt": "2026-10-14T02:27:32Z"}]
