@@ -29,7 +29,14 @@ def delete_task(tasks, task_id):
             return
     print(f"Task with ID {task_id} not found.")
 
+
+VALID_STATUSES = ["todo", "in-progress", "done"]
+
 def mark_status(tasks, task_id, new_status):
+    if new_status not in VALID_STATUSES:
+        print(f"Invalid status. Please choose from: {', '.join(VALID_STATUSES)}")
+        return
+
     for task in tasks:
         if task.id == task_id:
             task.status = new_status
@@ -44,15 +51,18 @@ def list_tasks(tasks, status_filter=None):
         print("No tasks found.")
         return
 
-    # Si nos pasan un filtro (done, todo, in-progress), filtramos la lista
+    if status_filter and status_filter not in VALID_STATUSES:
+        print(f"Invalid status: '{status_filter}'. Valid statuses are: {', '.join(VALID_STATUSES)}")
+        return
+
     if status_filter:
         tasks_to_show = [task for task in tasks if task.status == status_filter]
     else:
         tasks_to_show = tasks
 
     if not tasks_to_show:
-        print(f"No tasks found with status: {status_filter}")
+        print(f"No tasks found with status: '{status_filter}'")
         return
 
-    for task in tasks_to_show:
+    for task in tasks_to_show: 
         print(f"[{task.id}] {task.description} - Status: {task.status}")
