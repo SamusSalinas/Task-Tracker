@@ -2,6 +2,10 @@
 
 Una aplicación de línea de comandos (CLI) modular y robusta para la gestión de tareas, construida en **Python 3** aplicando principios de **Clean Code**, **arquitectura modular** y **persistencia de datos en JSON**.
 
+## Compatibilidad con Python
+
+La CI está configurada para compilar todos los archivos Python y ejecutar una prueba básica de la CLI con Python 3.12 y 3.15. El proyecto no declara una versión mínima de Python.
+
 ---
 
 ## 🎯 Características Principal
