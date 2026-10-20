@@ -1,35 +1,55 @@
 import sys
-from task_manager import add_task, update_task, delete_task, mark_status, list_tasks
-from storage import load_tasks
+from storage.json_storage import JSONStorage
+from repositories.task_repository import TaskRepository
+from services.task_service import TaskService
+from views.cli_view import CLIView
 
-tasks = load_tasks()
+def main():
+    storage = JSONStorage("tasks.json")
+    repository = TaskRepository(loader=storage, saver=storage)
+    service = TaskService(repository=repository)
+    view = CLIView()
 
-command = sys.argv[1] if len(sys.argv) > 1 else None
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <command> [args...]")
+        return
 
-if command == "add":
-    description = sys.argv[2]
-    add_task(tasks, description)
+    command = sys.argv[1]
 
-elif command == "delete":
-    task_id = int(sys.argv[2])
-    delete_task(tasks, task_id)
+    if command == "add" and len(sys.argv) > 2:
+        task = service.add_task(sys.argv[2])
+        view.show_task_added(task)
 
-elif command == "update":
-    task_id = int(sys.argv[2])
-    new_description = sys.argv[3]
-    update_task(tasks, task_id, new_description)
+    elif command == "delete" and len(sys.argv) > 2:
+        if service.delete_task(int(sys.argv[2])):
+            view.show_task_deleted()
+        else:
+            view.show_not_found(int(sys.argv[2]))
 
-elif command == "mark":
-    task_id = int(sys.argv[2])
-    new_status = sys.argv[3]
-    mark_status(tasks, task_id, new_status)
+    elif command == "update" and len(sys.argv) > 3:
+        if service.update_task(int(sys.argv[2]), sys.argv[3]):
+            view.show_task_updated()
+        else:
+            view.show_not_found(int(sys.argv[2]))
 
-elif command == "list":
-    if len(sys.argv) > 2:
-        status_filter = sys.argv[2]
-        list_tasks(tasks, status_filter)
-    else:
-        list_tasks(tasks)
+    elif command == "mark" and len(sys.argv) > 3:
+        task_id = int(sys.argv[2])
+        new_status = sys.argv[3]
+        success, reason = service.mark_status(task_id, new_status)
+        if success:
+            view.show_task_marked(new_status)
+        elif reason == "INVALID_STATUS":
+            view.show_invalid_status(new_status, service.VALID_STATUSES)
+        else:
+            view.show_not_found(task_id)
 
-else:
-    print("Invalid command. Available commands: add, delete, update, mark, list")
+    elif command == "list":
+        status_filter = sys.argv[2] if len(sys.argv) > 2 else None
+        tasks, error = service.list_tasks(status_filter)
+        if error == "INVALID_STATUS":
+            view.show_invalid_status(status_filter, service.VALID_STATUSES)
+        else:
+            view.show_tasks(tasks)
+
+if __name__ == "__main__":
+    main()

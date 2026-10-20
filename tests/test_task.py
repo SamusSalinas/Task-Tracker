@@ -1,27 +1,21 @@
 import unittest
-from task import Task
+from unittest.mock import patch, mock_open
+from models.task import Task
+from storage.json_storage import JSONStorage
 
-class TestTask(unittest.TestCase):
+class TestJSONStorage(unittest.TestCase):
+    def setUp(self):
+        self.storage = JSONStorage("tasks.json")
 
-    def test_task_creation_defaults(self):
-        # Creamos una tarea con lo mínimo
-        task = Task(description="Comprar leche", task_id=1)
+    @patch("builtins.open", new_callable=mock_open)
+    def test_save_tasks(self, mock_file):
+        tasks = [Task("Tarea de prueba", task_id=1)]
+        self.storage.save(tasks)
         
-        # Verificamos valores
-        self.assertEqual(task.id, 1)
-        self.assertEqual(task.description, "Comprar leche")
-        self.assertEqual(task.status, "todo")
-        self.assertIsNotNone(task.createdAt)
-        self.assertIsNotNone(task.updatedAt)
+        mock_file.assert_called_once_with("tasks.json", "w", encoding="utf-8")
+        mock_file().write.assert_called()
 
-    def test_task_to_dict(self):
-        task = Task(description="Estudiar Python", task_id=2)
-        task_dict = task.to_dict()
-        
-        # ¿Qué aserciones deberíamos hacer aquí?
-        self.assertEqual(task_dict['id'],2)
-        self.assertEqual(task_dict['description'], "Estudiar Python")
-        self.assertEqual(task_dict['status'], "todo")
-        self.assertIn('createdAt', task_dict)
-        self.assertIn('updatedAt', task_dict)
-        
+    @patch("builtins.open", side_effect=FileNotFoundError)
+    def test_load_tasks_file_not_found(self, mock_file):
+        tasks = self.storage.load()
+        self.assertEqual(tasks, [])
