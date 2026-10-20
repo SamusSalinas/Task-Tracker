@@ -18,14 +18,4 @@ La CI está configurada para compilar todos los archivos Python y ejecutar una p
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
-
-El proyecto está estructurado siguiendo el principio de **separación de responsabilidades** (Separation of Concerns):
-
-```text
-task-cli/
-├── task.py          # 📄 Modelo de datos (Clase Task y serialización to_dict)
-├── storage.py       # 💾 Módulo de persistencia (Lectura y escritura en JSON)
-├── task_manager.py  # 🧠 Lógica de negocio y validación de estados
-├── main.py          # 🖥️ Punto de entrada CLI y manejo de sys.argv
-└── tasks.json       # 📦 Archivo de almacenamiento de datos
+https://roadmap.sh/projects/task-tracker
