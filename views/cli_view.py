@@ -1,34 +1,63 @@
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
 from models.task import Task
+
+console = Console()
 
 class CLIView:
     @staticmethod
     def show_task_added(task: Task) -> None:
-        print(f"Task added successfully (ID: {task.id})")
+        console.print(Panel(f"[bold green]Tarea agregada con éxito![/bold green]\nID asignado: [cyan]{task.id}[/cyan]", 
+                            title="Nueva Tarea", border_style="green", expand=False))
 
     @staticmethod
     def show_task_updated() -> None:
-        print("Task updated successfully!")
+        console.print("[bold blue]Tarea actualizada correctamente.[/bold blue]")
 
     @staticmethod
     def show_task_deleted() -> None:
-        print("Task deleted successfully!")
+        console.print("[bold red]Tarea eliminada permanentemente.[/bold red]")
 
     @staticmethod
     def show_task_marked(status: str) -> None:
-        print(f"Task marked as {status}!")
+        color = "yellow" if status == "in-progress" else "green"
+        console.print(f"[{color}]Estado de la tarea actualizado a '{status}'![/{color}]")
 
     @staticmethod
     def show_not_found(task_id: int) -> None:
-        print(f"Task with ID {task_id} not found.")
+        console.print(f"[bold red]Error:[/bold red] No se encontró ninguna tarea con el ID [yellow]{task_id}[/yellow].")
 
     @staticmethod
     def show_invalid_status(status: str, valid_statuses: list[str]) -> None:
-        print(f"Invalid status: '{status}'. Valid statuses are: {', '.join(valid_statuses)}")
+        console.print(f"[bold red]Estado inválido:[/bold red] '{status}'.")
+        console.print(f"Los estados permitidos son: [cyan]{', '.join(valid_statuses)}[/cyan]")
 
     @staticmethod
     def show_tasks(tasks: list[Task]) -> None:
         if not tasks:
-            print("No tasks found.")
+            console.print(Panel("[yellow]No hay tareas para mostrar.[/yellow]", expand=False))
             return
+
+        # Crear una tabla visual
+        table = Table(title="Lista de Tareas", show_header=True, header_style="bold magenta")
+        
+        table.add_column("ID", style="cyan", justify="center", width=4)
+        table.add_column("Descripción", style="white")
+        table.add_column("Estado", justify="center", width=15)
+        table.add_column("Última Actualización", style="dim", justify="center")
+
         for task in tasks:
-            print(f"[{task.id}] {task.description} - Status: {task.status}")
+            if task.status == "todo":
+                status_formatted = "[red]Pendiente[/red]"
+            elif task.status == "in-progress":
+                status_formatted = "[yellow]En Progreso[/yellow]"
+            else:
+                status_formatted = "[green]Completada[/green]"
+
+            date_str = task.updatedAt.split("T")[0]
+
+            table.add_row(str(task.id), task.description, status_formatted, date_str)
+
+        console.print(table)
