@@ -6,7 +6,13 @@ Una aplicación de línea de comandos (CLI) modular y robusta para la gestión d
 
 ## Compatibilidad con Python
 
-La CI está configurada para compilar todos los archivos Python y ejecutar una prueba básica de la CLI con Python 3.12 y 3.15. El proyecto no declara una versión mínima estricta de Python.
+La CI está configurada para compilar todos los archivos Python, ejecutar las pruebas unitarias y realizar una prueba básica de la CLI con Python 3.12 y 3.15. El proyecto no declara una versión mínima estricta de Python.
+
+Instala las dependencias antes de ejecutar la aplicación:
+
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## Características Principales
 
