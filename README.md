@@ -4,11 +4,11 @@ Una aplicación de línea de comandos (CLI) modular y robusta para la gestión d
 
 > **Nota:** Esta es una implementación y solución para el proyecto [Task Tracker](https://roadmap.sh/projects/task-tracker) propuesto en **roadmap.sh**.
 
-## Compatibilidad con Python
+## Compatibilidad e Instalación
 
 La CI está configurada para compilar todos los archivos Python, ejecutar las pruebas unitarias y realizar una prueba básica de la CLI con Python 3.12 y 3.15. El proyecto no declara una versión mínima estricta de Python.
 
-Instala las dependencias antes de ejecutar la aplicación:
+Instala las dependencias antes de ejecutar la aplicación (incluye `rich` para la interfaz visual):
 
 ```bash
 python -m pip install -r requirements.txt
@@ -16,22 +16,25 @@ python -m pip install -r requirements.txt
 
 ## Características Principales
 
+* **Interfaz Visual Moderna**: Salidas de terminal estructuradas con tablas, paneles y colores semánticos utilizando la librería `rich`.
 * **Gestión CRUD Completa**: Creación, actualización, eliminación y listado de tareas.
 * **Control de Estados**: Actualización fluida del estado de tareas (`todo`, `in-progress`, `done`).
 * **Filtrado**: Filtrado de tareas por estado directamente desde la línea de comandos.
-* **Validación de Datos**: Validación centralizada de entradas de comandos y estados (`VALID_STATUSES`).
+* **Validación de Datos**: Validación centralizada de entradas de comandos y estados.
 * **Persistencia de Datos**: Almacenamiento local automático mediante archivos JSON (`json.load` / `json.dump`).
 * **Arquitectura Limpia y SOLID**: Separación estricta de responsabilidades (Modelos, Interfaces, Repositorios, Servicios y Vistas) con Inyección de Dependencias.
 * **Pruebas Unitarias**: Suite de pruebas robusta implementada con `unittest` y `MagicMock` garantizando la fiabilidad del código.
 
 ## Guía de Comandos para task-cli
 
+> **Nota de Ejecución:** El proyecto incluye scripts envoltorios (`task-cli` para Bash y `task-cli.bat` para Windows). Si usas Git Bash o Linux, ejecuta los comandos con `./task-cli`. En el CMD de Windows, usa simplemente `task-cli`.
+
 ### 1. Agregar una tarea
 
 Añade una nueva tarea a la lista (el estado inicial por defecto será `todo`).
 
 ```bash
-python main.py add "Comprar leche y pan"
+task-cli add "Comprar leche y pan"
 ```
 
 ### 2. Actualizar la descripción
@@ -39,7 +42,7 @@ python main.py add "Comprar leche y pan"
 Modifica la descripción de una tarea existente buscando por su ID.
 
 ```bash
-python main.py update 1 "Comprar leche, pan y café"
+task-cli update 1 "Comprar leche, pan y café"
 ```
 
 ### 3. Cambiar el estado de una tarea
@@ -47,15 +50,13 @@ python main.py update 1 "Comprar leche, pan y café"
 Actualiza el estado de una tarea indicando su ID y el nuevo estado (`todo`, `in-progress` o `done`).
 
 * Marcar en progreso:
-
 ```bash
-python main.py mark 1 in-progress
+task-cli mark 1 in-progress
 ```
 
 * Marcar como completada:
-
 ```bash
-python main.py mark 1 done
+task-cli mark 1 done
 ```
 
 ### 4. Eliminar una tarea
@@ -63,25 +64,23 @@ python main.py mark 1 done
 Elimina una tarea de la lista mediante su ID.
 
 ```bash
-python main.py delete 1
+task-cli delete 1
 ```
 
 ### 5. Listar tareas
 
-Muestra las tareas guardadas. Puedes ver todas o filtrar según su estado.
+Muestra las tareas guardadas de forma tabular. Puedes ver todas o filtrar según su estado.
 
 * Listar TODAS las tareas:
-
 ```bash
-python main.py list
+task-cli list
 ```
 
 * Filtrar por estado específico:
-
 ```bash
-python main.py list done
-python main.py list todo
-python main.py list in-progress
+task-cli list done
+task-cli list todo
+task-cli list in-progress
 ```
 
 ## Ejecución de Pruebas Automáticas

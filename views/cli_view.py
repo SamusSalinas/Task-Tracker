@@ -23,7 +23,8 @@ class CLIView:
     @staticmethod
     def show_task_marked(status: str) -> None:
         color = "yellow" if status == "in-progress" else "green"
-        console.print(f"[{color}]Estado de la tarea actualizado a '{status}'![/{color}]")
+        console.print(Panel(f"[{color}]Estado de la tarea actualizado a '{status}'![/{color}]", 
+                            title="Actualización de Tarea", border_style=color, expand=False))
 
     @staticmethod
     def show_not_found(task_id: int) -> None:
