@@ -10,11 +10,19 @@ def main():
     service = TaskService(repository=repository)
     view = CLIView()
 
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <command> [args...]")
+    
+    cantidad_argumentos = len(sys.argv)
+
+    if cantidad_argumentos < 2:
+        view.incorrect_number_of_arguments("Se requiere al menos un comando.")
+        return
+    
+    command = sys.argv[1]
+
+    if cantidad_argumentos > 2 and command != "update" and command != "mark":
+        view.incorrect_number_of_arguments("Número incorrecto de argumentos.")
         return
 
-    command = sys.argv[1]
 
     if command == "add" and len(sys.argv) > 2:
         task = service.add_task(sys.argv[2])

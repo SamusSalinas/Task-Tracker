@@ -1,3 +1,4 @@
+from rich import box
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -7,6 +8,11 @@ from models.task import Task
 console = Console()
 
 class CLIView:
+
+    @staticmethod
+    def incorrect_number_of_arguments(message: str) -> None:
+        console.print(Panel(f"[bold red]Error:[/bold red] {message}", border_style="red", expand=False))
+
     @staticmethod
     def show_task_added(task: Task) -> None:
         console.print(Panel(f"[bold green]Tarea agregada con éxito![/bold green]\nID asignado: [cyan]{task.id}[/cyan]", 
@@ -42,11 +48,12 @@ class CLIView:
             return
 
         # Crear una tabla visual
-        table = Table(title="Lista de Tareas", show_header=True, header_style="bold magenta")
+        table = Table(title="Lista de Tareas", box=box.ROUNDED, show_header=True, header_style="bold magenta",)
         
         table.add_column("ID", style="cyan", justify="center", width=4)
         table.add_column("Descripción", style="white")
         table.add_column("Estado", justify="center", width=15)
+        table.add_column("Creación", style="dim", justify="center", width=12)
         table.add_column("Última Actualización", style="dim", justify="center")
 
         for task in tasks:
@@ -58,7 +65,8 @@ class CLIView:
                 status_formatted = "[green]Completada[/green]"
 
             date_str = task.updatedAt.split("T")[0]
+            created_date_str = task.createdAt.split("T")[0]
 
-            table.add_row(str(task.id), task.description, status_formatted, date_str)
+            table.add_row(str(task.id), task.description, status_formatted, created_date_str, date_str)
 
         console.print(table)
