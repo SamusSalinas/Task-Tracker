@@ -1,2 +1,13 @@
-.vscode
-.vscode/settings.json
+tasks.json
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+.vscode/
+.idea/
+
+
+.DS_Store
+Thumbs.db
