@@ -47,7 +47,6 @@ class CLIView:
             console.print(Panel("[yellow]No hay tareas para mostrar.[/yellow]", expand=False))
             return
 
-        # Crear una tabla visual
         table = Table(title="Lista de Tareas", box=box.ROUNDED, show_header=True, header_style="bold magenta",)
         
         table.add_column("ID", style="cyan", justify="center", width=4)

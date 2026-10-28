@@ -10,54 +10,57 @@ def main():
     service = TaskService(repository=repository)
     view = CLIView()
 
-    
-    cantidad_argumentos = len(sys.argv)
-
-    if cantidad_argumentos < 2:
-        view.incorrect_number_of_arguments("Se requiere al menos un comando.")
+    if len(sys.argv) < 2:
+        view.incorrect_number_of_arguments("Se requiere al menos un comando. Uso: task-cli <comando> [args]")
         return
     
-    command = sys.argv[1]
+    match sys.argv[1:]:
+        
+        case ["add", description]:
+            task = service.add_task(description)
+            view.show_task_added(task)
 
-    if cantidad_argumentos > 2 and command != "update" and command != "mark":
-        view.incorrect_number_of_arguments("Número incorrecto de argumentos.")
-        return
+        case ["delete", task_id]:
+            if service.delete_task(int(task_id)):
+                view.show_task_deleted()
+            else:
+                view.show_not_found(int(task_id))
 
+        case ["update", task_id, new_description]:
+            if service.update_task(int(task_id), new_description):
+                view.show_task_updated()
+            else:
+                view.show_not_found(int(task_id))
 
-    if command == "add" and len(sys.argv) > 2:
-        task = service.add_task(sys.argv[2])
-        view.show_task_added(task)
+        case ["mark", task_id, new_status]:
+            success, reason = service.mark_status(int(task_id), new_status)
+            if success:
+                view.show_task_marked(new_status)
+            elif reason == "INVALID_STATUS":
+                view.show_invalid_status(new_status, service.VALID_STATUSES)
+            else:
+                view.show_not_found(int(task_id))
 
-    elif command == "delete" and len(sys.argv) > 2:
-        if service.delete_task(int(sys.argv[2])):
-            view.show_task_deleted()
-        else:
-            view.show_not_found(int(sys.argv[2]))
-
-    elif command == "update" and len(sys.argv) > 3:
-        if service.update_task(int(sys.argv[2]), sys.argv[3]):
-            view.show_task_updated()
-        else:
-            view.show_not_found(int(sys.argv[2]))
-
-    elif command == "mark" and len(sys.argv) > 3:
-        task_id = int(sys.argv[2])
-        new_status = sys.argv[3]
-        success, reason = service.mark_status(task_id, new_status)
-        if success:
-            view.show_task_marked(new_status)
-        elif reason == "INVALID_STATUS":
-            view.show_invalid_status(new_status, service.VALID_STATUSES)
-        else:
-            view.show_not_found(task_id)
-
-    elif command == "list":
-        status_filter = sys.argv[2] if len(sys.argv) > 2 else None
-        tasks, error = service.list_tasks(status_filter)
-        if error == "INVALID_STATUS":
-            view.show_invalid_status(status_filter, service.VALID_STATUSES)
-        else:
+        case ["list"]:
+            tasks, error = service.list_tasks(None)
             view.show_tasks(tasks)
+
+        case ["list", status_filter]:
+            tasks, error = service.list_tasks(status_filter)
+            if error == "INVALID_STATUS":
+                view.show_invalid_status(status_filter, service.VALID_STATUSES)
+            else:
+                view.show_tasks(tasks)
+
+        
+        case ["add" | "delete" | "update" | "mark" | "list", *rest]:
+            command = sys.argv[1]
+            view.incorrect_number_of_arguments(f"Número incorrecto de argumentos para el comando '{command}'.")
+
+    
+        case _:
+            command = sys.argv[1]
+            view.incorrect_number_of_arguments(f"Comando desconocido: '{command}'")
 
 if __name__ == "__main__":
     main()
